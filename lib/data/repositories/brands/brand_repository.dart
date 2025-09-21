@@ -28,7 +28,7 @@ class BrandRepository extends GetxController {
       throw 'Erreur Supabase: ${e.message}';
     } catch (e) {
       print(e);
-      throw 'Quelque chose s\'est mal passée lors de la récupération des marques ${e}';
+      throw 'Quelque chose s\'est mal passée lors de la récupération des marques $e';
     }
   }
 

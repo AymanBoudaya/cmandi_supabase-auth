@@ -18,7 +18,7 @@ class UserModel {
 
   /// constructor for usermodel
   UserModel({
-    required this.id,
+    this.id='',
     required this.email,
     required this.username,
     required this.firstName,

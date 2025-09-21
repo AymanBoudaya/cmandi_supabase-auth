@@ -9,14 +9,15 @@ import '../../../utils/exceptions/format_exceptions.dart';
 import '../../../utils/exceptions/platform_exceptions.dart';
 
 class UserRepository extends GetxController {
+
   static UserRepository get instance => Get.find();
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final _table = 'users';
-
   /// Sauvegarder un nouvel utilisateur
   Future<void> saveUserRecord(UserModel user) async {
     try {
+
       print('🔄 Sauvegarde utilisateur: ${user.toJson()}');
 
       // Utilisez .select() pour obtenir une réponse

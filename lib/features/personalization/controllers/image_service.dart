@@ -1,7 +1,4 @@
 // services/image_service.dart
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 /*
 class ImageService {
   static final ImageService _instance = ImageService._internal();

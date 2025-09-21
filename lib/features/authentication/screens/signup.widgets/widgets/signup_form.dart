@@ -121,7 +121,7 @@ class TSignupform extends StatelessWidget {
           /// Sélection du Rôle
           Obx(
             () => DropdownButtonFormField<UserRole>(
-              value: controller.selectedRole.value,
+              initialValue: controller.selectedRole.value,
               decoration: const InputDecoration(
                 labelText: 'Rôle',
                 prefixIcon: Icon(Iconsax.user_octagon),
@@ -152,7 +152,7 @@ class TSignupform extends StatelessWidget {
           /// Sélection du Sexe
           Obx(
             () => DropdownButtonFormField<UserGender>(
-              value: controller.selectedGender.value,
+              initialValue: controller.selectedGender.value,
               decoration: const InputDecoration(
                 labelText: 'Sexe',
                 prefixIcon: Icon(Iconsax.user_octagon),

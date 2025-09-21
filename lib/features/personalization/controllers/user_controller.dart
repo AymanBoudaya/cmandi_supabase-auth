@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../data/repositories/authentication/authentication_repository.dart';
 import '../../../data/repositories/user/user_repository.dart';
-import '../../../utils/constants/image_strings.dart';
-import '../../../utils/helpers/network_manager.dart';
-import '../../../utils/popups/full_screen_loader.dart';
 import '../../../utils/popups/loaders.dart';
-import '../../authentication/screens/login/login.dart';
 import '../models/user_model.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -31,7 +26,7 @@ class UserController extends GetxController {
     // Listener sur l'état de connexion Supabase
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final session = data.session;
-      if (session != null && session.user != null) {
+      if (session != null) {
         fetchUserRecord();
       } else {
         user(UserModel.empty());
@@ -92,7 +87,7 @@ class UserController extends GetxController {
 
   /// Delet user account
   /* void deleteUserAccount() async { try { // Start Loading TFullScreenLoader.openLoadingDialog( "Nous sommes en train de supprimer votre compte...", TImages.docerAnimation); /// First re-authenticate the user final auth = AuthenticationRepository.instance; final provider = auth.authUser!.providerData.map((e) => e.providerId).first; if (provider.isNotEmpty) { // Reverify auth email if (provider == 'google.com') { await auth.signInWithGoogle(); await auth.deleteAccount(); TFullScreenLoader.stopLoading(); Get.offAll(() => const LoginScreen()); } else if (provider == 'password') { TFullScreenLoader.stopLoading(); Get.to(() => const ReAuthLoginForm()); } } } catch (e) { // Remove Loader TFullScreenLoader.stopLoading(); // Show error message TLoaders.warningSnackBar(title: "Erreur", message: e.toString()); } }*/
-  Future<void> reAuthenticateEmailAndPasswordUser() async {
+  /*Future<void> reAuthenticateEmailAndPasswordUser() async {
     try {
       TFullScreenLoader.openLoadingDialog(
           "Nous sommes en train de vérifier votre compte...",
@@ -117,7 +112,7 @@ class UserController extends GetxController {
       TFullScreenLoader.stopLoading();
       TLoaders.warningSnackBar(title: "Erreur!", message: e.toString());
     }
-  }
+  }*/
 
   Future<void> updateProfileImage(XFile pickedFile) async {
     try {

@@ -7,15 +7,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../features/authentication/screens/login/login.dart';
 import '../../../features/authentication/screens/onboarding/onboarding.dart';
-import '../../../features/authentication/screens/signup.widgets/verify_email.dart';
 import '../../../navigation_menu.dart';
-import '../../../utils/local_storage/storage_utility.dart';
 import '../user/user_repository.dart';
 
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();
 
-  final deviceStorage = GetStorage();
   GoTrueClient get _auth => Supabase.instance.client.auth;
 
   Session? get session => _auth.currentSession;
@@ -25,6 +22,16 @@ class AuthenticationRepository extends GetxController {
 
   String? lastAuthPassword;
 
+    late final GetStorage deviceStorage;
+  
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize storage in onInit to ensure it's ready
+    deviceStorage = GetStorage();
+  }
+  
+
   @override
   void onReady() {
     FlutterNativeSplash.remove();
@@ -33,35 +40,25 @@ class AuthenticationRepository extends GetxController {
       final event = data.event;
       final session = data.session;
       if (event == AuthChangeEvent.signedIn && session != null) {
-        // Fetch user details here
-        final userDetails = await UserRepository.instance.fetchUserDetails();
-
-        await TLocalStorage.init(session.user.id);
-
+        try {
+          await UserRepository.instance.fetchUserDetails();
+        } catch (_) {}
         Get.offAll(() => const NavigationMenu());
       } else if (event == AuthChangeEvent.signedOut) {
         Get.offAll(() => const LoginScreen());
       }
     });
     screenRedirect();
+    super.onReady();
+
   }
 
   screenRedirect() async {
     final user = authUser;
 
     if (user != null) {
-      if (user.emailConfirmedAt != null) {
-        final userDetails = await UserRepository.instance.fetchUserDetails();
-
-        await TLocalStorage.init(user.id);
         Get.offAll(() => const NavigationMenu());
-      } else {
-        /// Correction : on passe aussi le password stocké
-        Get.offAll(() => VerifyEmailScreen(
-              email: user.email ?? '',
-              password: lastAuthPassword ?? '',
-            ));
-      }
+  
     } else {
       deviceStorage.writeIfNull('IsFirstTime', true);
       deviceStorage.read('IsFirstTime') != true
@@ -70,6 +67,94 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
+   /// Sign up with email and send OTP
+  Future<void> signUpWithEmailOTP(String email, Map<String, dynamic> userData) async {
+    try {
+      // Store user data temporarily for after verification
+      await deviceStorage.write('pending_user_data', {
+        'email': email,
+        'user_data': userData,
+      });
+
+      // Send OTP to email
+      await _auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: true,
+        data: userData,
+        emailRedirectTo: null,
+      );
+    } on AuthException catch (e) {
+      throw e.message;
+    } on PlatformException catch (e) {
+      throw e.message ?? 'Platform error occurred.';
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+  /// Verify OTP and complete signup
+  Future<AuthResponse> verifyOTP(String email, String token) async {
+    try {
+   
+      // Verify the OTP
+      final response = await _auth.verifyOTP(
+        email: email,
+        token: token,
+        type: OtpType.signup,
+      );
+    return response;
+    } on AuthException catch (e) {
+      throw e.message;
+    } on PlatformException catch (e) {
+      throw e.message ?? 'Platform error occurred.';
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+  /// Resend OTP
+  Future<void> resendOTP(String email) async {
+    try {
+      await _auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: false, // User already exists in pending state
+      );
+    } on AuthException catch (e) {
+      throw e.message;
+    } on PlatformException catch (e) {
+      throw e.message ?? 'Platform error occurred.';
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+  /// Send password reset email using OTP
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      // Use signInWithOtp with type recovery for password reset
+      await _auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: false,
+        emailRedirectTo: null
+      );
+    } on AuthException catch (e) {
+      throw e.message;
+    } on PlatformException catch (e) {
+      throw e.message ?? 'Platform error occurred.';
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+    Future<void> logout() async {
+    try {
+      await _auth.signOut();
+      Get.offAll(() => const LoginScreen());
+    } on AuthException catch (e) {
+      throw e.message;
+    } catch (_) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
   Future<AuthResponse> loginWithEmailAndPassword(
     String email,
     String password,
@@ -89,6 +174,7 @@ class AuthenticationRepository extends GetxController {
       throw 'Something went wrong. Please try again';
     }
   }
+/*
 
   Future<AuthResponse> registerWithEmailAndPassword(
     String email,
@@ -125,16 +211,7 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
-  Future<void> logout() async {
-    try {
-      await _auth.signOut();
-      Get.offAll(() => const LoginScreen());
-    } on AuthException catch (e) {
-      throw e.message;
-    } catch (_) {
-      throw 'Something went wrong. Please try again';
-    }
-  }
+
 
   Future<void> reAuthenticateWithEmailAndPassword(
     String email,
@@ -162,5 +239,5 @@ class AuthenticationRepository extends GetxController {
     } catch (e) {
       throw e.toString();
     }
-  }
+  }*/
 }

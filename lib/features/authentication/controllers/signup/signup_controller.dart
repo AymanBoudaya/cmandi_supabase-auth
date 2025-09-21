@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../data/repositories/authentication/authentication_repository.dart';
 import '../../../../data/repositories/user/user_repository.dart';
@@ -8,8 +7,7 @@ import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/helpers/network_manager.dart';
 import '../../../../utils/popups/full_screen_loader.dart';
 import '../../../../utils/popups/loaders.dart';
-import '../../../personalization/models/user_model.dart';
-import '../../screens/signup.widgets/verify_email.dart';
+import '../../screens/signup.widgets/otp_verification_screen.dart';
 import '../../screens/signup.widgets/widgets/signup_form.dart';
 
 class SignupController extends GetxController {
@@ -70,64 +68,41 @@ class SignupController extends GetxController {
 
       // 4. Register with Supabase
       print('🔄 Début de l\'inscription...');
-
-      final AuthResponse response =
-          await AuthenticationRepository.instance.registerWithEmailAndPassword(
-        email.text.trim(),
-        password.text.trim(),
-      );
-
-      // 5. Ensure user is loaded
-      final user = response.user;
-
-      if (user == null) {
-        throw Exception(
-          "L'utilisateur n'a pas pu être chargé après l'inscription.",
-        );
-      }
-
-      print('✅ Utilisateur créé avec ID: ${user.id}');
-
       // 6. Enregistrer les donnés utilisateurs dans la table Supabase
-      final newUser = UserModel(
-        id: user.id,
-        email: email.text.trim(),
-        username: username.text.trim(),
-        firstName: firstName.text.trim(),
-        lastName: lastName.text.trim(),
-        phone: phoneNumber.text.trim(),
-        sex: selectedGender.value.dbValue,
-        role: selectedRole.value.dbValue,
-        profileImageUrl: '',
+      final userData = {
+        'firstName': firstName.text.trim(),
+        'lastName': lastName.text.trim(),
+        'username': username.text.trim(),
+        'phone': phoneNumber.text.trim(),
+        'sex': selectedGender.value.dbValue,
+        'role': selectedRole.value.dbValue,
+        'profileImageUrl': '',
+      };
+
+      // Send OTP to email
+      await AuthenticationRepository.instance.signUpWithEmailOTP(
+        email.text.trim(),
+        userData,
       );
 
-      print('🔄 Sauvegarde des données utilisateur...');
-
-      await _userRepository.saveUserRecord(newUser);
-
-      // 7. Navigate to verify email screen
       TFullScreenLoader.stopLoading();
       TLoaders.successSnackBar(
-        title: "Félicitations!",
-        message:
-            "Votre compte a été créé! Vérifiez votre email pour continuer.",
+        title: "OTP envoyé!",
+        message: "Un code de vérification a été envoyé à votre adresse email.",
       );
 
-      Get.off(() => VerifyEmailScreen(
-            email: email.text.trim(),
-            password: password.text.trim(),
-          ));
+      // Navigate to OTP verification screen
+      Get.off(() => OTPVerificationScreen(
+        email: email.text.trim(),
+        userData: userData,
+      ));
+
     } catch (e) {
       TFullScreenLoader.stopLoading();
-      print('❌ Erreur complète: $e');
-      // Message d'erreur plus spécifique
-      String errorMessage = 'Une erreur est survenue';
-      if (e.toString().contains('duplicate key')) {
-        errorMessage = 'Cet utilisateur existe déjà';
-      }
-
-      TLoaders.errorSnackBar(title: 'Erreur', message: errorMessage);
-      TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
+      TLoaders.errorSnackBar(
+        title: 'Erreur',
+        message: e.toString(),
+      );
     } finally {
       _isProcessing = false;
     }
