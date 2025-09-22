@@ -36,7 +36,7 @@ class TLoginForm extends StatelessWidget {
               const SizedBox(
                 height: AppSizes.spaceBtwInputFields,
               ),
-              Obx(
+              /*Obx(
                 () => TextFormField(
                   controller: controller.password,
                   validator: (value) => TValidator.validatePassword(value),
@@ -92,6 +92,17 @@ class TLoginForm extends StatelessWidget {
                   child: ElevatedButton(
                       onPressed: () => controller.emailAndPasswordSignIn(),
                       child: const Text(TTexts.signIn))),
+
+*/
+
+              /// Bouton envoyer OTP
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => controller.emailOtpSignIn(),
+                  child: const Text("Recevoir un code OTP"),
+                ),
+              ),
               const SizedBox(
                 height: AppSizes.spaceBtwItems / 2,
               ),

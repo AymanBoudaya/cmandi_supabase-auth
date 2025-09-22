@@ -1,4 +1,4 @@
-import 'package:caferesto/utils/constants/text_strings.dart';
+/*import 'package:caferesto/utils/constants/text_strings.dart';
 import 'package:caferesto/utils/validators/validation.dart';
 import 'package:flutter/material.dart';
 import 'package:caferesto/utils/constants/sizes.dart';
@@ -67,3 +67,4 @@ class ForgetPassword extends StatelessWidget {
     );
   }
 }
+*/

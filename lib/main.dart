@@ -19,6 +19,7 @@ Future<void> main() async {
 
   // Initialiser GetStorage (stockage local pour GetX)
   await GetStorage.init();
+  print('✅ GetStorage initialized');
 
   try {
     // Charger les variables d'environnement depuis le fichier .env
@@ -29,6 +30,7 @@ Future<void> main() async {
       url: dotenv.env['SUPABASE_URL']!,
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
+  print('✅ Supabase initialized');
 
     // Injecter votre repository d'authentification (à remplacer par votre implémentation)
     Get.put(AuthenticationRepository());

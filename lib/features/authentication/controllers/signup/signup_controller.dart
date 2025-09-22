@@ -1,3 +1,4 @@
+import 'package:caferesto/features/personalization/models/user_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -13,13 +14,13 @@ import '../../screens/signup.widgets/widgets/signup_form.dart';
 class SignupController extends GetxController {
   static SignupController get instance => Get.find();
 
-  final hidePassword = true.obs;
+  // final hidePassword = true.obs;
   final privacyPolicy = true.obs;
   final email = TextEditingController();
   final lastName = TextEditingController();
   final firstName = TextEditingController();
   final username = TextEditingController();
-  final password = TextEditingController();
+  // final password = TextEditingController();
   final phoneNumber = TextEditingController();
   final Rx<UserRole> selectedRole = UserRole.Client.obs;
   final Rx<UserGender> selectedGender = UserGender.Homme.obs;
@@ -28,6 +29,10 @@ class SignupController extends GetxController {
 
   final UserRepository _userRepository = UserRepository.instance;
   bool _isProcessing = false;
+
+  final RxMap<String, dynamic> _userData = <String, dynamic>{}.obs;
+
+  Map<String, dynamic> get userData => _userData;
 
   /// -- SIGNUP
   void signup() async {
@@ -39,6 +44,10 @@ class SignupController extends GetxController {
     );
 
     try {
+      TFullScreenLoader.openLoadingDialog(
+        "Création du compte...",
+        TImages.docerAnimation,
+      );
       // 1. Check internet connection
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
@@ -50,13 +59,13 @@ class SignupController extends GetxController {
         return;
       }
 
-      // 2. Validate form
+      // 2. Valider formulaire
       if (!signupFormKey.currentState!.validate()) {
         TFullScreenLoader.stopLoading();
         return;
       }
 
-      // 3. Check privacy policy
+      // 3. vérfier privacy policy
       if (!privacyPolicy.value) {
         TFullScreenLoader.stopLoading();
         TLoaders.warningSnackBar(
@@ -70,13 +79,13 @@ class SignupController extends GetxController {
       print('🔄 Début de l\'inscription...');
       // 6. Enregistrer les donnés utilisateurs dans la table Supabase
       final userData = {
-        'firstName': firstName.text.trim(),
-        'lastName': lastName.text.trim(),
+        'first_name': firstName.text.trim(),
+        'last_name': lastName.text.trim(),
         'username': username.text.trim(),
         'phone': phoneNumber.text.trim(),
         'sex': selectedGender.value.dbValue,
         'role': selectedRole.value.dbValue,
-        'profileImageUrl': '',
+        'profile_image_url': '',
       };
 
       // Send OTP to email
@@ -93,10 +102,9 @@ class SignupController extends GetxController {
 
       // Navigate to OTP verification screen
       Get.off(() => OTPVerificationScreen(
-        email: email.text.trim(),
-        userData: userData,
-      ));
-
+            email: email.text.trim(),
+            userData: userData,
+          ));
     } catch (e) {
       TFullScreenLoader.stopLoading();
       TLoaders.errorSnackBar(

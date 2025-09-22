@@ -9,29 +9,30 @@ import '../../../utils/exceptions/format_exceptions.dart';
 import '../../../utils/exceptions/platform_exceptions.dart';
 
 class UserRepository extends GetxController {
-
   static UserRepository get instance => Get.find();
 
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final SupabaseClient _client = Supabase.instance.client;
   final _table = 'users';
+
   /// Sauvegarder un nouvel utilisateur
   Future<void> saveUserRecord(UserModel user) async {
     try {
-
-      print('🔄 Sauvegarde utilisateur: ${user.toJson()}');
+      print('🔁 UserRepository.saveUserRecord upserting ${user.toJson()}');
 
       // Utilisez .select() pour obtenir une réponse
-      final response =
-          await _supabase.from(_table).insert(user.toJson()).select().single();
+      final resp = await _client
+          .from(_table)
+          .upsert(user.toJson(), onConflict: 'id')
+          .select()
+          .maybeSingle();
 
-      print('✅ Utilisateur sauvegardé: $response');
+      print('✅ User upsert response: $resp');
     } on PostgrestException catch (e) {
-      print('❌ Erreur PostgREST: ${e.code} - ${e.message}');
-      throw 'Erreur base de données: ${e.message}';
-    } catch (e, stack) {
-      print('❌ Erreur inattendue: $e');
-      print('Stack: $stack');
-      throw 'Erreur sauvegarde: $e';
+      print('❌ PostgrestException saveUserRecord: ${e.message}');
+      rethrow;
+    } catch (e, st) {
+      print('❌ Unknown error saveUserRecord: $e\n$st');
+      rethrow;
     }
   }
 
@@ -41,7 +42,7 @@ class UserRepository extends GetxController {
       final authUser = Supabase.instance.client.auth.currentUser;
       if (authUser == null) throw 'No authenticated user.';
 
-      final response = await _supabase
+      final response = await _client
           .from(_table)
           .select()
           .eq('id', authUser.id)
@@ -72,7 +73,7 @@ class UserRepository extends GetxController {
   /// Mettre à jour un utilisateur
   Future<void> updateUserDetails(UserModel updatedUser) async {
     try {
-      final response = await _supabase
+      final response = await _client
           .from(_table)
           .update(updatedUser.toJson())
           .eq('id', updatedUser.id);
@@ -99,7 +100,7 @@ class UserRepository extends GetxController {
       if (userId == null) throw 'No authenticated user.';
 
       final response =
-          await _supabase.from(_table).update(json).eq('id', userId).select();
+          await _client.from(_table).update(json).eq('id', userId).select();
       print('✅ Update response: $response');
 
       if (response.isEmpty) throw 'Update failed.';
@@ -118,7 +119,7 @@ class UserRepository extends GetxController {
   /// Supprimer un utilisateur
   Future<void> removeUserRecord(String userId) async {
     try {
-      final response = await _supabase.from(_table).delete().eq('id', userId);
+      final response = await _client.from(_table).delete().eq('id', userId);
 
       if (response.isEmpty) throw 'Delete failed.';
     } on AuthException catch (e) {

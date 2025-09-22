@@ -49,7 +49,7 @@ class TSignupform extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignupController());
+    final controller = SignupController.instance;
     return Form(
       key: controller.signupFormKey,
       child: Column(
@@ -178,10 +178,10 @@ class TSignupform extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: AppSizes.spaceBtwInputFields),
+          // const SizedBox(height: AppSizes.spaceBtwInputFields),
 
           /// Mot de passe
-          Obx(
+         /* Obx(
             () => TextFormField(
               controller: controller.password,
               validator: (value) => TValidator.validatePassword(value),
@@ -199,7 +199,7 @@ class TSignupform extends StatelessWidget {
                     )),
               ),
             ),
-          ),
+          ),*/
           const SizedBox(height: AppSizes.spaceBtwSections),
 
           /// Case à cocher Conditions d'utilisation

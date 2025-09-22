@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/widgets/success_screen/success_screen.dart';
@@ -18,8 +19,11 @@ class OTPVerificationController extends GetxController {
   final RxBool canResendOTP = false.obs;
   final RxInt resendCountdown = 60.obs;
   Timer? _resendTimer;
-  final UserRepository _userRepository = UserRepository.instance;
-  
+
+  final otpController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();
@@ -36,7 +40,7 @@ class OTPVerificationController extends GetxController {
   void startResendTimer() {
     canResendOTP.value = false;
     resendCountdown.value = 60;
-    
+
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (resendCountdown.value > 0) {
         resendCountdown.value--;
@@ -48,50 +52,34 @@ class OTPVerificationController extends GetxController {
   }
 
   /// Verify OTP and save user data
-  Future<void> verifyOTP(String email, String otpCode, Map<String, dynamic> userData) async {
+  Future<void> verifyOTP(String email, String otpCode) async {
     try {
       isLoading.value = true;
-      TFullScreenLoader.openLoadingDialog("Vérification en cours...", TImages.docerAnimation);
-      
+      TFullScreenLoader.openLoadingDialog(
+          "Vérification en cours...", TImages.docerAnimation);
+      print('🔐 Controller verifyOTP for $email');
+
       // Verify OTP
-      final response = await AuthenticationRepository.instance.verifyOTP(email, otpCode);
-      
-      if (response.user != null) {
-        // 6. Enregistrer les données utilisateurs dans la table Supabase
-        final newUser = UserModel(
-          id: response.user!.id,
-          email: email,
-          username: userData['username'],
-          firstName: userData['first_name'],
-          lastName: userData['last_name'],
-          phone: userData['phone'],
-          sex: userData['sex'],
-          role: userData['role'],
-          profileImageUrl: userData['profile_image_url'],
-        );
+      final response =
+          await AuthenticationRepository.instance.verifyOTP(email, otpCode);
 
-        print('🔄 Sauvegarde des données utilisateur...');
-        await _userRepository.saveUserRecord(newUser);
-        
-        TFullScreenLoader.stopLoading();
-        
-        // 7. Navigate to success screen
-        TLoaders.successSnackBar(
-          title: "Félicitations!",
-          message: "Votre compte a été créé avec succès!",
-        );
-
-        Get.offAll(() => SuccessScreen(
-          image: TImages.successfullyRegisterAnimation,
-          title: 'Compte créé avec succès',
-          subTitle: 'Bienvenue dans notre application!',
-          onPressed: () => Get.offAll(() => const NavigationMenu()),
-        ));
-      } else {
-        throw 'Échec de la vérification OTP';
-      }
-    } catch (e) {
       TFullScreenLoader.stopLoading();
+
+      // 7. Navigate to success screen
+      TLoaders.successSnackBar(
+        title: "Félicitations!",
+        message: "Votre compte a été créé avec succès!",
+      );
+
+      Get.offAll(() => SuccessScreen(
+            image: TImages.successfullyRegisterAnimation,
+            title: 'Compte créé avec succès',
+            subTitle: 'Bienvenue dans notre application!',
+            onPressed: () => Get.offAll(() => const NavigationMenu()),
+          ));
+    } catch (e, st) {
+      TFullScreenLoader.stopLoading();
+      print('❌ verifyOTP controller error: $e\n$st');
       TLoaders.errorSnackBar(
         title: 'Erreur de vérification',
         message: e.toString(),
@@ -109,10 +97,10 @@ class OTPVerificationController extends GetxController {
         title: 'OTP renvoyé',
         message: 'Un nouveau code a été envoyé à votre email.',
       );
-      
       // Reset the timer
       startResendTimer();
-    } catch (e) {
+    } catch (e, st) {
+      print('❌ resendOTP error: $e\n$st');
       TLoaders.errorSnackBar(
         title: 'Erreur',
         message: 'Impossible de renvoyer le code: ${e.toString()}',

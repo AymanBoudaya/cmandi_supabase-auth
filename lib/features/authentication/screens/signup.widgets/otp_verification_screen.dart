@@ -3,26 +3,22 @@ import 'package:get/get.dart';
 
 import '../../controllers/signup/verify_otp_controller.dart';
 
-
 class OTPVerificationScreen extends StatelessWidget {
   final String email;
   final Map<String, dynamic> userData;
-  
-  const OTPVerificationScreen({
-    super.key, 
-    required this.email,
-    required this.userData
-  });
+
+  const OTPVerificationScreen(
+      {super.key, required this.email, required this.userData});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OTPVerificationController());
     final otpController = TextEditingController();
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vérification OTP'),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -40,7 +36,7 @@ class OTPVerificationScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            
+
             // OTP Input Field
             TextFormField(
               controller: otpController,
@@ -52,41 +48,42 @@ class OTPVerificationScreen extends StatelessWidget {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20),
-            
+
             // Verify Button
             Obx(() => SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: controller.isLoading.value
-                    ? null
-                    : () => controller.verifyOTP(email, otpController.text.trim(), userData),
-                child: controller.isLoading.value
-                    ? const CircularProgressIndicator()
-                    : const Text('Vérifier'),
-              ),
-            )),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () => controller.verifyOTP(
+                            email, otpController.text.trim()),
+                    child: controller.isLoading.value
+                        ? const CircularProgressIndicator()
+                        : const Text('Vérifier'),
+                  ),
+                )),
             const SizedBox(height: 20),
-            
+
             // Resend OTP Section
             Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Vous n'avez pas reçu le code?",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                TextButton(
-                  onPressed: controller.canResendOTP.value
-                      ? () => controller.resendOTP(email)
-                      : null,
-                  child: Text(
-                    controller.canResendOTP.value
-                        ? 'Renvoyer'
-                        : 'Renvoyer (${controller.resendCountdown.value}s)',
-                  ),
-                ),
-              ],
-            )),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Vous n'avez pas reçu le code?",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    TextButton(
+                      onPressed: controller.canResendOTP.value
+                          ? () => controller.resendOTP(email)
+                          : null,
+                      child: Text(
+                        controller.canResendOTP.value
+                            ? 'Renvoyer'
+                            : 'Renvoyer (${controller.resendCountdown.value}s)',
+                      ),
+                    ),
+                  ],
+                )),
           ],
         ),
       ),

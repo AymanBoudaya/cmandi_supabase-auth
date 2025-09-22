@@ -10,6 +10,7 @@ import '../../../../utils/helpers/network_manager.dart';
 import '../../../../utils/popups/full_screen_loader.dart';
 import '../../../../utils/popups/loaders.dart';
 import '../../../personalization/controllers/user_controller.dart';
+import '../../screens/login/otp_screen.dart';
 
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
@@ -17,7 +18,7 @@ class LoginController extends GetxController {
 
   /// Variables
   final rememberMe = false.obs;
-  final hidePassword = true.obs;
+  // final hidePassword = true.obs;
   final localStorage = GetStorage();
   final email = TextEditingController();
   final password = TextEditingController();
@@ -30,6 +31,45 @@ class LoginController extends GetxController {
     super.onInit();
   }
 
+  void emailOtpSignIn() async {
+    try {
+      TFullScreenLoader.openLoadingDialog(
+        "Envoi du code OTP...",
+        TImages.docerAnimation,
+      );
+
+      // Vérifier connexion internet
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Valider formulaire
+      if (!loginFormKey.currentState!.validate()) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Sauvegarder email si "Remember Me"
+      if (rememberMe.value) {
+        localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
+      }
+
+      // Envoi OTP via AuthenticationRepository
+      await AuthenticationRepository.instance.sendOtp(email.text.trim());
+
+      TFullScreenLoader.stopLoading();
+
+      // Aller vers l'écran OTP
+      Get.to(() => OtpScreen(email: email.text.trim()));
+
+    } catch (e) {
+      TFullScreenLoader.stopLoading();
+      TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
+    }
+  }
+/*
   void emailAndPasswordSignIn() async {
     try {
       // Start loading
@@ -71,7 +111,7 @@ class LoginController extends GetxController {
       TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
     }
   }
-
+*/
   /// -- Google Sign In Authentication
   Future<void> googleSignIn() async {
     try {
