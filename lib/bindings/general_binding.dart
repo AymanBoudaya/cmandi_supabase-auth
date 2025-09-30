@@ -24,6 +24,5 @@ class GeneralBinding extends Bindings {
     Get.put(VariationController());
     Get.put(AddressController());
     Get.put(CheckoutController());
-    print('🔧 InitialBinding: dependencies registered');
   }
 }

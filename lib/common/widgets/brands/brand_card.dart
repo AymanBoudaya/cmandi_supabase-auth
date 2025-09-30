@@ -30,7 +30,7 @@ class BrandCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /// Icon
+            /// Icone
             CircularImage(
               isNetworkImage: true,
               image: brand.image,
@@ -44,7 +44,7 @@ class BrandCard extends StatelessWidget {
             ),
             const SizedBox(width: AppSizes.spaceBtwItems / 2),
 
-            /// Text
+            /// Texte
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -61,7 +61,7 @@ class BrandCard extends StatelessWidget {
                       );
                     },
                   ),
-                  // Product Count
+                  // Nombre de Produits
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return SizedBox(

@@ -13,21 +13,24 @@ class ChangeName extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(UpdateNameController());
     return Scaffold(
-      /// Custom AppBar
+      /// AppBar Personnalisé
       appBar: TAppBar(
         showBackArrow: true,
         title: Text('Modifier le nom',
             style: Theme.of(context).textTheme.headlineSmall),
+        customBackNavigation: () {
+          Get.back(result: false);
+        },
       ),
       body: Padding(
         padding: EdgeInsets.all(AppSizes.defaultSpace),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// Headings
+            /// En tetes
             ///
             Text(
-                "Use real name for easy verification, this name will appear on several pages",
+                "Utiliser un nom réel, ce nom va appraître dans plusieurs pages",
                 style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: AppSizes.spaceBtwSections),
             Form(
@@ -53,6 +56,28 @@ class ChangeName extends StatelessWidget {
                       hintText: 'Entrez votre nom',
                     ),
                   ),
+                  const SizedBox(
+                    height: AppSizes.spaceBtwInputFields,
+                  ),
+                  TextFormField(
+                    controller: controller.username,
+                    validator: (value) =>
+                        TValidator.validateEmptyText("Nom d'utilsateur", value),
+                    decoration: const InputDecoration(
+                        labelText: "Nom d'utilisateur",
+                        hintText: "Entrez votre nom d'utilisateur"),
+                  ),
+                  const SizedBox(
+                    height: AppSizes.spaceBtwInputFields,
+                  ),
+                  TextFormField(
+                    controller: controller.phone,
+                    validator: (value) =>
+                        TValidator.validateEmptyText("Téléphone", value),
+                    decoration: const InputDecoration(
+                        labelText: "Téléphone",
+                        hintText: "Entrez votre numéro de téléphone"),
+                  )
                 ],
               ),
             ),

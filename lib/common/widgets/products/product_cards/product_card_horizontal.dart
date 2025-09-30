@@ -42,7 +42,7 @@ class TProductCardHorizontal extends StatelessWidget {
               backgroundColor: dark ? AppColors.dark : AppColors.light,
               child: Stack(
                 children: [
-                  /// Thumbnail Image
+                  /// Image Thumbnail
                   SizedBox(
                       width: 120,
                       height: 120,
@@ -52,7 +52,7 @@ class TProductCardHorizontal extends StatelessWidget {
                         isNetworkImage: true,
                       )),
 
-                  /// Sale Tag
+                  /// Pourcentage de remise
                   if (salePercentage != null)
                     Positioned(
                       top: 12,
@@ -72,7 +72,7 @@ class TProductCardHorizontal extends StatelessWidget {
                       ),
                     ),
 
-                  /// Favorite Icon
+                  /// Icon Favoris
                   Positioned(
                       top: 0,
                       right: 0,
@@ -81,7 +81,7 @@ class TProductCardHorizontal extends StatelessWidget {
               ),
             ),
 
-            /// Details
+            /// Détails
             SizedBox(
               width: 172,
               child: Padding(
@@ -105,11 +105,11 @@ class TProductCardHorizontal extends StatelessWidget {
                     ),
                     const Spacer(),
 
-                    /// Price Row
+                    /// Colonne de Prix
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        /// Price
+                        /// Prix
                         Flexible(
                           child: Column(
                             children: [

@@ -13,7 +13,6 @@ class CategoryModel {
     this.parentId = '',
   });
 
-  /// Empty helper function
   static CategoryModel empty() {
     return CategoryModel(
       id: '',
@@ -24,7 +23,6 @@ class CategoryModel {
     );
   }
 
-  /// Convert CategoryModel to JSON (for Supabase insert/update)
   Map<String, dynamic> toJson({bool includeId = false}) {
     final data = {
       'name': name.trim(),
@@ -36,7 +34,6 @@ class CategoryModel {
     return data;
   }
 
-  /// More generic: works for Firebase OR untyped JSON
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     try {
       return CategoryModel(

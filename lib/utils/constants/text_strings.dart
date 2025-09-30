@@ -27,8 +27,7 @@ class TTexts {
 
   static const String onBoardingSubTitle1 =
       "Bienvenue dans un monde de choix illimités - Votre produit parfait vous attend !";
-  static const String onBoardingSubTitle2 =
-      "Pour des transactions fluides, choisissez votre mode de paiement - Votre confort, notre priorité !";
+  static const String onBoardingSubTitle2 = "Votre confort, notre priorité !";
   static const String onBoardingSubTitle3 =
       "De notre porte à la vôtre - Livraison rapide et sécurisée !";
 

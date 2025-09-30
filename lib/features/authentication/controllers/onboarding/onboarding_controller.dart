@@ -10,16 +10,16 @@ class OnBoardingController extends GetxController {
   final pageController = PageController();
   Rx<int> currentPageIndex = 0.obs;
 
-  /// Update Current Index when Page Scroll
+  /// Mettre a jour index en cas de swipe par doigt
   void updatePageIndicator(index) => currentPageIndex.value = index;
 
-  /// Jump to the specific dot selected page
+  /// Passer à la page spécifié par points
   void dotNavigationClick(index) {
     currentPageIndex.value = index;
     pageController.jumpToPage(index);
   }
 
-  /// Update Current Index & jump to next page
+  /// Mettre a jour index et passer à la page suivante
   void nextPage() {
     if (currentPageIndex.value < 2) {
       final nextPage = currentPageIndex.value + 1;
@@ -31,7 +31,7 @@ class OnBoardingController extends GetxController {
     }
   }
 
-  /// Update Current Index & jump to the last page
+  /// Mettre a jour index et passer à page de connexio
   void skipPage() {
     Get.to(() => LoginScreen());
   }

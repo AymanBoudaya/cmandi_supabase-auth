@@ -13,45 +13,39 @@ class BrandModel {
     this.productsCount,
   });
 
-  // Empty Helper Function
   static BrandModel empty() {
     return BrandModel(id: '', image: '', name: '');
   }
 
-  /// Conver model to JSON structure so that you can store data in Firestore
   toJson() {
     return {
-      'Id': id,
-      'Name': name,
-      'Image': image,
-      'ProductsCount': productsCount,
-      'IsFeatured': isFeatured,
+      'name': name,
+      'image': image,
+      'products_count': productsCount,
+      'is_featured': isFeatured,
     };
   }
 
-  /// Map from supabase to user model
   factory BrandModel.fromJson(Map<String, dynamic> document) {
     final data = document;
     if (data.isEmpty) {
       return BrandModel.empty();
     }
     return BrandModel(
-      id: data['Id'] ?? '',
-      name: data['Name'] ?? '',
-      image: data['Image'] ?? '',
-      isFeatured: data['IsFeatured'] ?? false,
-      productsCount: data['ProductsCount'] as int?,
+      id: data['id'] ?? '',
+      name: data['name'] ?? '',
+      image: data['image'] ?? '',
+      isFeatured: data['is_featured'] ?? false,
+      productsCount: data['products_count'] as int?,
     );
   }
 
-  /// Map from firebase snapshot to user model
   factory BrandModel.fromMap(Map<String, dynamic> data) {
-    // Map Json record to the Model
     return BrandModel(
-      id: data['id']?.toString() ?? '', // Adjust if UUID
+      id: data['id']?.toString() ?? '',
       name: data['name'] ?? '',
       image: data['image'] ?? '',
-      productsCount: data['products_count'] ?? '',
+      productsCount: data['products_count'] ?? 0,
       isFeatured: data['is_featured'] ?? false,
     );
   }

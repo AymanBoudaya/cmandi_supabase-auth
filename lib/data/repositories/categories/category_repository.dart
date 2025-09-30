@@ -12,12 +12,13 @@ class CategoryRepository extends GetxController {
 
   /// Variables
   final _db = Supabase.instance.client;
+  final _table = 'categories';
 
-  /// Get all categories
+  /// Charger toutes les categories
   Future<List<CategoryModel>> getAllCategories() async {
     try {
       final response =
-          await _db.from('categories').select().order('name', ascending: true);
+          await _db.from(_table).select().order('name', ascending: true);
       return response
           .map((category) => CategoryModel.fromJson(category))
           .toList();
@@ -28,11 +29,11 @@ class CategoryRepository extends GetxController {
     }
   }
 
-  /// Get sub categories
+  /// Charger sous-categories
   Future<List<CategoryModel>> getSubCategories(String categoryId) async {
     try {
       final response = await _db
-          .from('categories')
+          .from(_table)
           .select()
           .eq('parentId', categoryId)
           .order('name', ascending: true);
@@ -46,13 +47,29 @@ class CategoryRepository extends GetxController {
     }
   }
 
+  Future<void> addCategory(CategoryModel category) async {
+    try {
+      final response = await _db.from(_table).insert(category.toJson());
+      if (response.error != null) {
+        throw response.error!.message;
+      }
+    } on SupabaseException catch (e) {
+      throw SupabaseException(e.code).message;
+    } on PostgrestException catch (e) {
+      throw 'Erreur base de données : ${e.code} - ${e.message}';
+    } catch (e) {
+      print(e);
+      throw 'Erreur lors ajout categorie : ${e} }';
+    }
+  }
+
   Future<void> uploadDummyCategories() async {
     try {
       final categories = UploadCategories.dummyCategories;
 
       final insertData =
           categories.map((category) => category.toJson()).toList();
-      final response = await _db.from('categories').insert(insertData);
+      final response = await _db.from(_table).insert(insertData);
 
       if (response.error != null) {
         throw response.error!.message;

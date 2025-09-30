@@ -8,8 +8,6 @@ import 'package:get/get.dart';
 
 import 'package:iconsax/iconsax.dart';
 
-import '../../password-config/forget_password.dart';
-
 class TLoginForm extends StatelessWidget {
   const TLoginForm({
     super.key,

@@ -37,7 +37,7 @@ class TCouponCode extends StatelessWidget {
             ),
           ),
 
-          /// Button
+          /// Bouton
           SizedBox(
             width: 80,
             child: ElevatedButton(
@@ -51,7 +51,7 @@ class TCouponCode extends StatelessWidget {
                   color: Colors.grey.withAlpha((255 * 0.1).toInt()),
                 ),
               ),
-              child: Text('Apply'),
+              child: Text('Appliquer'),
             ),
           ),
         ],

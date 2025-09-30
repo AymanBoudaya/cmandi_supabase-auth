@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../features/shop/models/brand_model.dart';
 import '../../../utils/exceptions/format_exceptions.dart';
+import '../../../utils/exceptions/supabase_exception.dart';
 
 class BrandRepository extends GetxController {
   static BrandRepository get instance => Get.find();
@@ -10,12 +11,29 @@ class BrandRepository extends GetxController {
   /// Variables
 
   final _db = Supabase.instance.client;
+  final _table = 'brands';
+
+  Future<void> addBrand(BrandModel brand) async {
+    try {
+      final response = await _db.from(_table).insert(brand.toJson());
+      if (response.error != null) {
+        throw response.error!.message;
+      }
+    } on SupabaseException catch (e) {
+      throw SupabaseException(e.code).message;
+    } on PostgrestException catch (e) {
+      throw 'Erreur base de données : ${e.code} - ${e.message}';
+    } catch (e) {
+      print(e);
+      throw 'Erreur lors ajout etablissement : ${e} }';
+    }
+  }
 
   /// Get all brands
   Future<List<BrandModel>> getAllBrands() async {
     try {
       final response = await _db
-          .from('brands')
+          .from(_table)
           .select()
           .withConverter<List<BrandModel>>((data) {
         return data.map((e) => BrandModel.fromMap(e)).toList();
@@ -49,7 +67,7 @@ class BrandRepository extends GetxController {
       if (brandIds.isEmpty) return [];
 
       final response = await _db
-          .from('brands')
+          .from(_table)
           .select()
           .inFilter('id', brandIds)
           .limit(2)

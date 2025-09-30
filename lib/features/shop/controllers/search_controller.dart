@@ -24,7 +24,7 @@ class ProductSearchController extends GetxController {
   void onInit() {
     super.onInit();
     searchController.addListener(_onSearchChanged);
-    _onSearchChanged(); // Initial trigger
+    _onSearchChanged();
   }
 
   void _onSearchChanged() {
@@ -37,9 +37,6 @@ class ProductSearchController extends GetxController {
         searchedProducts.assignAll(allProductsController.products);
       } else {
         isLoading.value = true;
-        // final queryObject = Query(text);
-        //final results = await allProductsController.fetchProductsByQuery(queryObject);
-        // searchedProducts.assignAll(results);
         isLoading.value = false;
       }
     });

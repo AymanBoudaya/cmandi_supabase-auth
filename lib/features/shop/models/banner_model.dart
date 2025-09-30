@@ -15,7 +15,6 @@ class BannerModel {
     this.productsCount,
   });
 
-  // Empty Helper Function
   static BannerModel empty() {
     return BannerModel(
       id: '',
@@ -24,7 +23,6 @@ class BannerModel {
     );
   }
 
-  /// Conver model to JSON structure so that you can store data in Firestore
   toJson() {
     return {
       'Id': id,
@@ -35,7 +33,6 @@ class BannerModel {
     };
   }
 
-  /// Map from firebase to user model
   factory BannerModel.fromJson(Map<String, dynamic> document) {
     final data = document;
     if (data.isEmpty) {
@@ -50,13 +47,11 @@ class BannerModel {
     );
   }
 
-  /// Map from firebase snapshot to user model
   factory BannerModel.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> document) {
     if (document.data() != null) {
       final data = document.data()!;
 
-      // Map Json record to the Model
       return BannerModel(
         id: document.id,
         name: data['Name'] ?? '',

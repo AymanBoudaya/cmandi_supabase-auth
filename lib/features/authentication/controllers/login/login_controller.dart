@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:caferesto/features/authentication/screens/signup.widgets/otp_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,7 +11,6 @@ import '../../../../utils/helpers/network_manager.dart';
 import '../../../../utils/popups/full_screen_loader.dart';
 import '../../../../utils/popups/loaders.dart';
 import '../../../personalization/controllers/user_controller.dart';
-import '../../screens/login/otp_screen.dart';
 
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
@@ -62,85 +62,40 @@ class LoginController extends GetxController {
       TFullScreenLoader.stopLoading();
 
       // Aller vers l'écran OTP
-      Get.to(() => OtpScreen(email: email.text.trim()));
-
+      Get.to(() => OTPVerificationScreen(
+            email: email.text.trim(),
+            userData: {},
+          ));
     } catch (e) {
       TFullScreenLoader.stopLoading();
       TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
     }
   }
-/*
-  void emailAndPasswordSignIn() async {
-    try {
-      // Start loading
-      TFullScreenLoader.openLoadingDialog(
-        "Authentification en cours...",
-        TImages.docerAnimation,
-      );
 
-      // Check internet connection
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        TFullScreenLoader.stopLoading();
-        return;
-      }
-
-      // Validate form
-      if (!loginFormKey.currentState!.validate()) {
-        TFullScreenLoader.stopLoading();
-        return;
-      }
-
-      // Save Data if Remember Me is selected
-      if (rememberMe.value) {
-        localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
-        localStorage.write('REMEMBER_ME_PASSWORD', password.text.trim());
-      }
-
-      // Se connecter en utilisant la connexion par email et mot de passe
-      final userCredentials = await AuthenticationRepository.instance
-          .loginWithEmailAndPassword(email.text.trim(), password.text.trim());
-
-      // Remove Loader
-      TFullScreenLoader.stopLoading();
-
-      // Redirect
-      AuthenticationRepository.instance.screenRedirect();
-    } catch (e) {
-      TFullScreenLoader.stopLoading();
-      TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
-    }
-  }
-*/
-  /// -- Google Sign In Authentication
   Future<void> googleSignIn() async {
     try {
-      // Start loading
       TFullScreenLoader.openLoadingDialog(
-        "Authentification en cours...",
+        "Connexion avec Google...",
         TImages.docerAnimation,
       );
 
-      // Check internet connection
+      // Vérifier connexion internet
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
         TFullScreenLoader.stopLoading();
         return;
       }
 
-      // Login user using Google authentication
-      /*final userCredentials = await AuthenticationRepository.instance
-          .signInWithGoogle();
-      await userController.saveUserRecord(userCredentials);
-*/
-      // Remove Loader
-      TFullScreenLoader.stopLoading();
+      // Appeler le repo
+      await AuthenticationRepository.instance.signInWithGoogle();
 
-      // Redirect
-      AuthenticationRepository.instance.screenRedirect();
+      TFullScreenLoader.stopLoading();
+      // ⚠️ Pas besoin de navigation manuelle ici :
+      // onAuthStateChange dans AuthenticationRepository gère déjà la redirection.
     } catch (e) {
       TFullScreenLoader.stopLoading();
-      TLoaders.errorSnackBar(title: 'Erreur !', message: e.toString());
+      TLoaders.errorSnackBar(
+          title: 'Erreur Google Sign-In', message: e.toString());
     }
   }
 }

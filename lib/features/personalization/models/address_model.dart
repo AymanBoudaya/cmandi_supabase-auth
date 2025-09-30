@@ -28,7 +28,6 @@ class AddressModel {
 
   String get formattedPhoneNo => TFormatter.formatPhoneNumber(phoneNumber);
 
-  // Empty helper method
   static AddressModel empty() {
     return AddressModel(
       id: '',
@@ -42,7 +41,6 @@ class AddressModel {
     );
   }
 
-  // Convert model to JSON for Firestore
   Map<String, dynamic> toJson() {
     return {
       'Id': id,
@@ -58,7 +56,6 @@ class AddressModel {
     };
   }
 
-  // Create model from JSON
   factory AddressModel.fromJson2(Map<String, dynamic> data) {
     if (data.isEmpty) return AddressModel.empty();
 
@@ -76,9 +73,7 @@ class AddressModel {
     );
   }
 
-  // Create model from Firestore snapshot
   factory AddressModel.fromMap(Map<String, dynamic> data) {
-
     return AddressModel(
       id: data['Id']?.toString() ?? '',
       name: data['Name'] ?? '',

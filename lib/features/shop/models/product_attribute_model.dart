@@ -7,7 +7,6 @@ class ProductAttributeModel {
     this.values,
   });
 
-  /// Convert model to JSON structure so that you can store data in Firestore
   toJson() {
     return {
       'Name': name,
@@ -15,7 +14,6 @@ class ProductAttributeModel {
     };
   }
 
-  /// Map from firebase to user model
   factory ProductAttributeModel.fromJson(Map<String, dynamic> document) {
     final data = document;
     if (data.isEmpty) {

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/login/otp_controller.dart';
+import '../../controllers/signup/verify_otp_controller.dart';
 
 class OtpScreen extends StatelessWidget {
   final String email;
@@ -9,7 +9,7 @@ class OtpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(OtpController());
+    final controller = Get.put(OTPVerificationController());
 
     return Scaffold(
       appBar: AppBar(title: const Text("Vérification OTP")),
@@ -20,7 +20,6 @@ class OtpScreen extends StatelessWidget {
           children: [
             Text("Un code OTP a été envoyé à : $email"),
             const SizedBox(height: 20),
-
             TextField(
               controller: controller.otpCode,
               decoration: const InputDecoration(
@@ -30,7 +29,6 @@ class OtpScreen extends StatelessWidget {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () => controller.verifyOtp(email),
               child: const Text("Vérifier"),
@@ -41,3 +39,4 @@ class OtpScreen extends StatelessWidget {
     );
   }
 }
+*/

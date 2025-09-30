@@ -26,7 +26,7 @@ class AllBrandsScreen extends StatelessWidget {
             padding: EdgeInsets.all(AppSizes.defaultSpace),
             child: Column(
               children: [
-                /// Heading
+                /// En tete
                 TSectionHeading(
                   title: 'Marques',
                   showActionButton: false,
@@ -35,8 +35,8 @@ class AllBrandsScreen extends StatelessWidget {
                   height: AppSizes.spaceBtwItems,
                 ),
 
-                /// Brands
-                /// -- Brands Grid
+                /// Etablissements
+                /// -- Grid
                 Obx(() {
                   if (brandController.isLoading.value) {
                     return const TbrandsShimmer();

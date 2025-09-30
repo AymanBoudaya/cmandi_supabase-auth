@@ -28,28 +28,24 @@ class OrderModel {
     this.address,
   });
 
-  /// Format the order date
   String get formattedOrderDate => THelperFunctions.getFormattedDate(orderDate);
 
-  /// Format the delivery date if available
   String get formattedDeliveryDate => deliveryDate != null
       ? THelperFunctions.getFormattedDate(deliveryDate!)
       : '';
 
-  /// Human-readable order status
   String get orderStatusText => status == OrderStatus.delivered
       ? 'Livrée'
       : status == OrderStatus.shipped
           ? 'Livraison en cours'
           : 'En cours de traitement';
 
-  /// Convert model to JSON (for Firestore)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'userId': userId,
       'paymentMethod': paymentMethod,
-      'status': status.toString(), // save as string
+      'status': status.toString(),
       'totalAmount': totalAmount,
       'orderDate': orderDate,
       'deliveryDate': deliveryDate,
@@ -58,7 +54,6 @@ class OrderModel {
     };
   }
 
-  /// Create model from Firestore document
   factory OrderModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return OrderModel(

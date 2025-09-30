@@ -16,7 +16,6 @@ class NavigationMenu extends StatelessWidget {
     final darkMode = THelperFunctions.isDarkMode(context);
 
     // Google Play Store colors
-    const Color playStoreSelected = Color(0xFF1A73E8); // Google blue
     const Color playStoreUnselected = Color(0xFF5F6368); // Google gray
     const Color playStoreBackground = Color(0xFFFFFFFF); // Pure white
     const Color darkModeBackground = Color(0xFF202124); // Google dark gray

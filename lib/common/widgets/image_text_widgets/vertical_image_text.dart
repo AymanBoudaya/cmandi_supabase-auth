@@ -29,14 +29,14 @@ class TVerticalImageText extends StatelessWidget {
         padding: const EdgeInsets.only(right: AppSizes.spaceBtwItems),
         child: Column(
           children: [
-            /// Circular Icon
+            /// Icone circulaire
             CircularImage(
               image: image,
               fit: BoxFit.fitWidth,
               isNetworkImage: isNetworkImage,
             ),
 
-            /// Text
+            /// Texte
             const SizedBox(height: AppSizes.spaceBtwItems / 2),
             SizedBox(
               width: 80,

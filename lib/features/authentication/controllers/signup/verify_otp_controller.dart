@@ -1,87 +1,72 @@
 import 'dart:async';
-
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
-import '../../../../common/widgets/success_screen/success_screen.dart';
 import '../../../../data/repositories/authentication/authentication_repository.dart';
-import '../../../../data/repositories/user/user_repository.dart';
-import '../../../../navigation_menu.dart';
-import '../../../../utils/constants/image_strings.dart';
-import '../../../../utils/popups/full_screen_loader.dart';
 import '../../../../utils/popups/loaders.dart';
-import '../../../personalization/models/user_model.dart';
 
 class OTPVerificationController extends GetxController {
   static OTPVerificationController get instance => Get.find();
 
-  final RxBool isLoading = false.obs;
-  final RxBool canResendOTP = false.obs;
-  final RxInt resendCountdown = 60.obs;
-  Timer? _resendTimer;
+  final AuthenticationRepository _authRepo = AuthenticationRepository.instance;
 
+  /// Champs liés à l’OTP
+  final emailController = TextEditingController();
   final otpController = TextEditingController();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
 
-  @override
-  void onInit() {
-    super.onInit();
-    startResendTimer();
-  }
+  /// Timer & état
+  final secondsRemaining = 60.obs;
+  final isResendAvailable = false.obs;
+  Timer? _timer;
+
+  final isLoading = false.obs;
 
   @override
   void onClose() {
-    _resendTimer?.cancel();
+    _timer?.cancel();
+    emailController.dispose();
+    otpController.dispose();
     super.onClose();
   }
 
-  /// Start timer for resend OTP
-  void startResendTimer() {
-    canResendOTP.value = false;
-    resendCountdown.value = 60;
+  /// Lancer un compte à rebours de 60 secondes
+  void startTimer() {
+    _timer?.cancel();
+    secondsRemaining.value = 60;
+    isResendAvailable.value = false;
 
-    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (resendCountdown.value > 0) {
-        resendCountdown.value--;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (secondsRemaining.value > 0) {
+        secondsRemaining.value--;
       } else {
-        canResendOTP.value = true;
+        isResendAvailable.value = true;
         timer.cancel();
       }
     });
   }
 
-  /// Verify OTP and save user data
-  Future<void> verifyOTP(String email, String otpCode) async {
+  /// Vérification de l’OTP
+  Future<void> verifyOTP() async {
     try {
       isLoading.value = true;
-      TFullScreenLoader.openLoadingDialog(
-          "Vérification en cours...", TImages.docerAnimation);
-      print('🔐 Controller verifyOTP for $email');
 
-      // Verify OTP
-      final response =
-          await AuthenticationRepository.instance.verifyOTP(email, otpCode);
+      final email = emailController.text.trim();
+      final otp = otpController.text.trim();
 
-      TFullScreenLoader.stopLoading();
+      if (email.isEmpty || otp.isEmpty) {
+        TLoaders.warningSnackBar(
+          title: "Champs manquants",
+          message: "Veuillez entrer votre email et le code OTP.",
+        );
+        return;
+      }
 
-      // 7. Navigate to success screen
-      TLoaders.successSnackBar(
-        title: "Félicitations!",
-        message: "Votre compte a été créé avec succès!",
-      );
+      await _authRepo.verifyOTP(email: email, otp: otp);
 
-      Get.offAll(() => SuccessScreen(
-            image: TImages.successfullyRegisterAnimation,
-            title: 'Compte créé avec succès',
-            subTitle: 'Bienvenue dans notre application!',
-            onPressed: () => Get.offAll(() => const NavigationMenu()),
-          ));
-    } catch (e, st) {
-      TFullScreenLoader.stopLoading();
-      print('❌ verifyOTP controller error: $e\n$st');
+      // Succès => navigation déjà gérée dans AuthenticationRepository
+    } catch (e) {
       TLoaders.errorSnackBar(
-        title: 'Erreur de vérification',
+        title: "Erreur",
         message: e.toString(),
       );
     } finally {
@@ -89,22 +74,37 @@ class OTPVerificationController extends GetxController {
     }
   }
 
-  /// Resend OTP
-  Future<void> resendOTP(String email) async {
+  /// Renvoyer un nouvel OTP
+  Future<void> resendOTP() async {
+    if (!isResendAvailable.value) return;
+
     try {
-      await AuthenticationRepository.instance.resendOTP(email);
+      final email = emailController.text.trim();
+      if (email.isEmpty) {
+        TLoaders.warningSnackBar(
+          title: "Email manquant",
+          message: "Veuillez entrer un email avant de renvoyer un code.",
+        );
+        return;
+      }
+
+      isLoading.value = true;
+
+      await _authRepo.sendOtp(email);
+
       TLoaders.successSnackBar(
-        title: 'OTP renvoyé',
-        message: 'Un nouveau code a été envoyé à votre email.',
+        title: "Code envoyé",
+        message: "Un nouveau code OTP a été envoyé à $email",
       );
-      // Reset the timer
-      startResendTimer();
-    } catch (e, st) {
-      print('❌ resendOTP error: $e\n$st');
+
+      startTimer();
+    } catch (e) {
       TLoaders.errorSnackBar(
-        title: 'Erreur',
-        message: 'Impossible de renvoyer le code: ${e.toString()}',
+        title: "Erreur envoi OTP",
+        message: e.toString(),
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

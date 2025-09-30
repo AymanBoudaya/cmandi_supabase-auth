@@ -11,24 +11,21 @@ class CartItemModel {
   CartItemModel({
     required this.productId,
     required this.quantity,
-    this.variationId ='',
-    this.title ='',
-    this.price =0.0,
+    this.variationId = '',
+    this.title = '',
+    this.price = 0.0,
     this.image,
     this.brandName,
     this.selectedVariation,
   });
 
-  // Empty Cart
   static CartItemModel empty() {
     return CartItemModel(
       productId: '',
       quantity: 0,
-
     );
   }
 
-  // Convert model to JSON
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
@@ -42,7 +39,6 @@ class CartItemModel {
     };
   }
 
-  // Create model from JSON
   factory CartItemModel.fromJson(Map<String, dynamic> data) {
     return CartItemModel(
       productId: data['productId'] ?? '',
@@ -52,7 +48,9 @@ class CartItemModel {
       quantity: data['quantity'] ?? 1,
       variationId: data['variationId'] ?? '',
       brandName: data['brandName'],
-      selectedVariation: data['selectedVariation'] != null ?Map<String, String>.from(data['selectedVariation']) : null,
+      selectedVariation: data['selectedVariation'] != null
+          ? Map<String, String>.from(data['selectedVariation'])
+          : null,
     );
   }
 }

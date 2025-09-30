@@ -29,11 +29,11 @@ class BrandShowcase extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSizes.spaceBtwItems),
         child: Column(
           children: [
-            /// Brand with products count
+            /// Etablissement ave nombre de produits
             BrandCard(showBorder: false, brand: brand),
             const SizedBox(height: AppSizes.spaceBtwItems),
 
-            /// Brand top 3 products Images
+            /// Top 3 images du produits de l'etablissement
             Row(
               children: images
                   .map((image) => brandTopProductImageWidget(image, context))

@@ -1,6 +1,7 @@
 import 'package:caferesto/common/widgets/appbar/appbar.dart';
 import 'package:caferesto/common/widgets/custom_shapes/containers/primary_header_container.dart';
 import 'package:caferesto/common/widgets/texts/section_heading.dart';
+import 'package:caferesto/features/personalization/screens/categories/add_category_screen.dart';
 import 'package:caferesto/features/personalization/screens/profile/profile.dart';
 import 'package:caferesto/features/shop/screens/order/order.dart';
 import 'package:caferesto/utils/constants/colors.dart';
@@ -16,6 +17,7 @@ import '../../../../data/repositories/product/product_repository.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../controllers/user_controller.dart';
 import '../address/address.dart';
+import '../brands/add_brand_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -25,6 +27,11 @@ class SettingsScreen extends StatelessWidget {
     final controller = ProductRepository.instance;
     final categoryController = CategoryRepository.instance;
     final userController = Get.put(UserController());
+
+    bool canAddCategory() {
+      final role = userController.user.value.role;
+      return role == 'Gérant' || role == 'Admin';
+    }
 
     void uploadDummyData() async {
       try {
@@ -52,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
       body: SingleChildScrollView(
           child: Column(
         children: [
-          /// Header
+          /// En tete
           TPrimaryHeaderContainer(
             child: Column(
               children: [
@@ -76,7 +83,7 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 )),
 
-                /// Profile Picture card
+                /// Carte du profil avec nom et email
                 TUserProfileTile(
                     onPressed: () => Get.to(() => const ProfileScreen())),
                 const SizedBox(height: AppSizes.spaceBtwSections),
@@ -84,12 +91,10 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          /// Body
-          ///
           Padding(
               padding: EdgeInsets.all(AppSizes.defaultSpace),
               child: Column(children: [
-                /// Account Settings
+                /// Paramètres du compte
                 TSectionHeading(
                   title: "Réglages du compte",
                   showActionButton: false,
@@ -132,7 +137,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Iconsax.security_card,
                     onTap: () {}),
 
-                /// App Settings
+                /// Paramètres de l'app
                 SizedBox(height: AppSizes.spaceBtwSections),
                 TSectionHeading(title: "Paramètres", showActionButton: false),
                 SizedBox(height: AppSizes.spaceBtwItems),
@@ -154,7 +159,7 @@ class SettingsScreen extends StatelessWidget {
                     subTitle: "Définir la qualité d'image haute définition",
                     trailing: Switch(value: false, onChanged: (value) {})),
 
-                /// Developer Section - Dummy Data Upload
+                /// Développeur , upload
                 SizedBox(height: AppSizes.spaceBtwSections),
                 TSectionHeading(
                     title: "Développement", showActionButton: false),
@@ -166,12 +171,21 @@ class SettingsScreen extends StatelessWidget {
                   onTap: uploadDummyData,
                 ),
                 SizedBox(height: AppSizes.spaceBtwItems),
-                TSettingsMenuTile(
-                  icon: Iconsax.document_upload,
-                  title: "Charger des catégories factices",
-                  subTitle: "Insère des données test dans l'application",
-                  onTap: uploadDummyCategories,
-                ),
+                if (canAddCategory())
+                  TSettingsMenuTile(
+                    icon: Iconsax.add,
+                    title: "Ajouter une catégorie",
+                    subTitle: "Insère une nouvelle catégorie",
+                    onTap: () => Get.to(() => AddCategoryScreen()),
+                  ),
+                SizedBox(height: AppSizes.spaceBtwItems),
+                if (canAddCategory())
+                  TSettingsMenuTile(
+                    icon: Iconsax.add,
+                    title: "Ajouter une établissement",
+                    subTitle: "Insère un établissement",
+                    onTap: () => Get.to(() => AddBrandScreen()),
+                  ),
                 SizedBox(
                   height: AppSizes.spaceBtwSections,
                 ),

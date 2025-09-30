@@ -15,6 +15,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingIcon,
     this.actions,
     this.leadingOnPressed,
+    this.customBackNavigation,
   });
 
   final Widget? title;
@@ -22,6 +23,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
   final IconData? leadingIcon;
   final List<Widget>? actions;
   final VoidCallback? leadingOnPressed;
+  final VoidCallback? customBackNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +36,22 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
         automaticallyImplyLeading: false,
         leading: showBackArrow
             ? IconButton(
-                onPressed: () => Get.back(),
+                onPressed: () {
+                  if (customBackNavigation != null) {
+                    customBackNavigation!();
+                  } else {
+                    Get.back();
+                  }
+                },
                 icon: Icon(
                   Iconsax.arrow_left,
                   color: dark ? AppColors.white : AppColors.dark,
                 ),
               )
             : leadingIcon != null
-            ? IconButton(onPressed: leadingOnPressed, icon: Icon(leadingIcon))
-            : null,
+                ? IconButton(
+                    onPressed: leadingOnPressed, icon: Icon(leadingIcon))
+                : null,
         title: title,
         actions: actions,
       ),

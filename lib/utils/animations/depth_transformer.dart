@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Trendy liquid swipe style transformer
+/// swipe liquide
 class LiquidPageTransformer extends PageTransformer {
   final double minScale;
   final double waveStrength;
@@ -13,9 +13,8 @@ class LiquidPageTransformer extends PageTransformer {
   @override
   Widget transform(Widget child, TransformInfo info) {
     final position = info.position;
-    final width = info.width;
 
-    // scale pages slightly while swiping
+    // diminuer la taille en swipant
     final scale = (1 - position.abs() * 0.15).clamp(minScale, 1.0);
 
     // curved wave clipping for liquid effect

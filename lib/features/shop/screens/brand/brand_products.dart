@@ -26,7 +26,7 @@ class BrandProducts extends StatelessWidget {
         padding: EdgeInsets.all(AppSizes.defaultSpace),
         child: Column(
           children: [
-            /// Brand Detail
+            /// Details de marques
             BrandCard(
               showBorder: true,
               brand: brand,
