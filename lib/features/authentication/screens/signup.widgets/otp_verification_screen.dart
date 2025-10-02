@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../common/widgets/appbar/appbar.dart';
+import '../../../../utils/helpers/helper_functions.dart';
 import '../../controllers/signup/verify_otp_controller.dart';
 
 class OTPVerificationScreen extends StatelessWidget {
@@ -20,8 +22,9 @@ class OTPVerificationScreen extends StatelessWidget {
     controller.startTimer();
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: TAppBar(
         title: const Text('Vérification OTP'),
+        showBackArrow: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -40,31 +43,35 @@ class OTPVerificationScreen extends StatelessWidget {
             const SizedBox(height: 40),
 
             // OTP Fields (pas besoin de Obx ici)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: List.generate(6, (index) {
-                return SizedBox(
-                  width: 50,
-                  child: TextField(
-                    maxLength: 1,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      counterText: "",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                return Flexible(
+                  child: SizedBox(
+                    width: 50,
+                    height: 60,
+                    child: TextField(
+                      maxLength: 1,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        counterText: "",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    onChanged: (val) {
-                      if (val.isNotEmpty) {
-                        final text = controller.otpController.text;
-                        final newText = text.padRight(6, ' ');
-                        controller.otpController.text =
-                            newText.replaceRange(index, index + 1, val);
+                      onChanged: (val) {
+                        if (val.isNotEmpty) {
+                          final text = controller.otpController.text;
+                          final newText = text.padRight(6, ' ');
+                          controller.otpController.text =
+                              newText.replaceRange(index, index + 1, val);
 
-                        if (index < 5) FocusScope.of(context).nextFocus();
-                      }
-                    },
+                          if (index < 5) FocusScope.of(context).nextFocus();
+                        }
+                      },
+                    ),
                   ),
                 );
               }),
@@ -93,10 +100,12 @@ class OTPVerificationScreen extends StatelessWidget {
 
             // Resend OTP Section
             Obx(
-              () => Row(
+              () => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Vous n'avez pas reçu le code ? "),
+                  Text(
+                    "Vous n'avez pas reçu le code ? ",
+                  ),
                   TextButton(
                     onPressed: controller.isResendAvailable.value
                         ? () => controller.resendOTP()
